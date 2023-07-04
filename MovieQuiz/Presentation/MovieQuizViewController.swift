@@ -4,12 +4,6 @@ struct QuizStepViewModel {
     let filmPosterImage: UIImage
     let question: String
     let questionCounterStr: String
-    
-    init(_ filmPosterImage: UIImage, _ question: String, _ questionCounterStr: String) {
-        self.filmPosterImage = filmPosterImage
-        self.question = question
-        self.questionCounterStr = questionCounterStr
-    }
 }
 
 struct QuizQuestion {
@@ -19,7 +13,7 @@ struct QuizQuestion {
     let question: String
     let correctAnswer: Bool
     
-    init(_ filmPosterName: String, _  correctAnswer: Bool, _ question: String = "") {
+    init(filmPosterName: String, correctAnswer: Bool, question: String = "") {
         self.filmPosterName = filmPosterName
         self.question = question.isEmpty ? QuizQuestion.questionDefault : question
         self.correctAnswer = correctAnswer
@@ -30,26 +24,20 @@ struct QuizResultsViewModel {
     let title: String
     let text: String
     let buttonText: String
-    
-    init(_ title: String, _ text: String, _ buttonText: String) {
-        self.title = title
-        self.text = text
-        self.buttonText = buttonText
-    }
 }
 
 final class MovieQuizViewController: UIViewController {
     private let questions: [QuizQuestion] = [
-        QuizQuestion("The Godfather", true),
-        QuizQuestion("The Dark Knight", true),
-        QuizQuestion("Kill Bill", true),
-        QuizQuestion("The Avengers", true),
-        QuizQuestion("Deadpool", true),
-        QuizQuestion("The Green Knight", true),
-        QuizQuestion("Old", false),
-        QuizQuestion("The Ice Age Adventures of Buck Wild", false),
-        QuizQuestion("Tesla", false),
-        QuizQuestion("Vivarium", false)
+        QuizQuestion(filmPosterName: "The Godfather", correctAnswer: true),
+        QuizQuestion(filmPosterName: "The Dark Knight", correctAnswer: true),
+        QuizQuestion(filmPosterName: "Kill Bill", correctAnswer: true),
+        QuizQuestion(filmPosterName: "The Avengers", correctAnswer: true),
+        QuizQuestion(filmPosterName: "Deadpool", correctAnswer: true),
+        QuizQuestion(filmPosterName: "The Green Knight", correctAnswer: true),
+        QuizQuestion(filmPosterName: "Old", correctAnswer: false),
+        QuizQuestion(filmPosterName: "The Ice Age Adventures of Buck Wild", correctAnswer: false),
+        QuizQuestion(filmPosterName: "Tesla", correctAnswer: false),
+        QuizQuestion(filmPosterName: "Vivarium", correctAnswer: false)
     ]
     
     private var currentQuestionIdx: Int = 0
@@ -65,26 +53,17 @@ final class MovieQuizViewController: UIViewController {
         filmPosterImage.layer.masksToBounds = true
         filmPosterImage.layer.cornerRadius = 20
         
-        showQuizStep(getQuizStep(currentQuestionIdx))
+        showQuizStep(quizStep: getQuizStep(questionIdx: currentQuestionIdx))
     }
     
-    private func getCounterPostfix() -> String {
-        return "/\(questions.count)"
-    }
-    
-    private func getQuizStep(_ questionIdx: Int) -> QuizStepViewModel {
-        return convertToQuizStep(questions[questionIdx])
-    }
-    
-    private func convertToQuizStep(_ from: QuizQuestion) -> QuizStepViewModel {
-        let retVal = QuizStepViewModel(
-            UIImage(named: from.filmPosterName) ?? UIImage(), from.question,
-            "\(currentQuestionIdx + 1)\(getCounterPostfix())")
+    private func getQuizStep(questionIdx: Int) -> QuizStepViewModel {
+        let quizQuestion = questions[questionIdx]
+        let retVal = QuizStepViewModel(filmPosterImage: UIImage(named: quizQuestion.filmPosterName) ?? UIImage(), question: quizQuestion.question, questionCounterStr: "\(currentQuestionIdx + 1)/\(questions.count)")
         
         return retVal
     }
     
-    private func showQuizStep(_ quizStep: QuizStepViewModel) {
+    private func showQuizStep(quizStep: QuizStepViewModel) {
         filmPosterImage.image = quizStep.filmPosterImage
         questionCounterLabel.text = quizStep.questionCounterStr
         questionLabel.text = quizStep.question
@@ -92,13 +71,13 @@ final class MovieQuizViewController: UIViewController {
         filmPosterImage.layer.borderWidth = 0
     }
     
-    private func showQuizResultAlert(_ result: QuizResultsViewModel) {
+    private func showQuizResultAlert(result: QuizResultsViewModel) {
         let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
         let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
             self.currentQuestionIdx = 0
             self.correctAnswersCount = 0
             
-            self.showQuizStep(self.getQuizStep(self.currentQuestionIdx))
+            self.showQuizStep(quizStep: self.getQuizStep(questionIdx: self.currentQuestionIdx))
         }
         
         alert.addAction(action)
@@ -107,12 +86,12 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNextQuestionOrResult() {
         if currentQuestionIdx == questions.count - 1 {
-            let resultText = "Your result: \(correctAnswersCount)\(getCounterPostfix())"
-            let result = QuizResultsViewModel("This round is over!", resultText, "Play again")
-            showQuizResultAlert(result)
+            let resultText = "Your result: \(correctAnswersCount)/\(questions.count)"
+            let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again")
+            showQuizResultAlert(result: result)
         } else {
             currentQuestionIdx += 1
-            showQuizStep(getQuizStep(currentQuestionIdx))
+            showQuizStep(quizStep: getQuizStep(questionIdx: currentQuestionIdx))
         }
     }
     
@@ -129,11 +108,11 @@ final class MovieQuizViewController: UIViewController {
     
     @IBAction private func noButtonTap(_ sender: UIButton) {
         let correctAnswer = questions[currentQuestionIdx].correctAnswer
-        show(isCorrect : !correctAnswer)
+        show(isCorrect: !correctAnswer)
     }
     
     @IBAction private func yesButtonTap(_ sender: UIButton) {
         let correctAnswer = questions[currentQuestionIdx].correctAnswer
-        show(isCorrect : correctAnswer)
+        show(isCorrect: correctAnswer)
     }
 }
