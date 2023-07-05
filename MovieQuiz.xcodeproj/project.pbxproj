@@ -18,6 +18,8 @@
 		AD7AFA552836189F00399704 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7AFA542836189F00399704 /* Array+Extensions.swift */; };
 		C8842B922A4B86FC00A7B3FD /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C8842B902A4B86FC00A7B3FD /* YS Display-Medium.ttf */; };
 		C8842B932A4B86FC00A7B3FD /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C8842B912A4B86FC00A7B3FD /* YS Display-Bold.ttf */; };
+		C8CDFBBC2A54CEB00008A4B2 /* SF-Pro-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8CDFBBA2A54CEB00008A4B2 /* SF-Pro-Text-Bold.otf */; };
+		C8CDFBBD2A54CEB00008A4B2 /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8CDFBBB2A54CEB00008A4B2 /* SF-Pro-Text-Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		AD7AFA542836189F00399704 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		C8842B902A4B86FC00A7B3FD /* YS Display-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Medium.ttf"; sourceTree = "<group>"; };
 		C8842B912A4B86FC00A7B3FD /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
+		C8CDFBBA2A54CEB00008A4B2 /* SF-Pro-Text-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Bold.otf"; sourceTree = "<group>"; };
+		C8CDFBBB2A54CEB00008A4B2 /* SF-Pro-Text-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Regular.otf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,8 @@
 		C8842B8F2A4B86DC00A7B3FD /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				C8CDFBBA2A54CEB00008A4B2 /* SF-Pro-Text-Bold.otf */,
+				C8CDFBBB2A54CEB00008A4B2 /* SF-Pro-Text-Regular.otf */,
 				C8842B912A4B86FC00A7B3FD /* YS Display-Bold.ttf */,
 				C8842B902A4B86FC00A7B3FD /* YS Display-Medium.ttf */,
 			);
@@ -175,9 +181,11 @@
 			files = (
 				AD1ABABE2831907F00B3E448 /* LaunchScreen.storyboard in Resources */,
 				C8842B922A4B86FC00A7B3FD /* YS Display-Medium.ttf in Resources */,
+				C8CDFBBC2A54CEB00008A4B2 /* SF-Pro-Text-Bold.otf in Resources */,
 				C8842B932A4B86FC00A7B3FD /* YS Display-Bold.ttf in Resources */,
 				AD1ABABB2831907F00B3E448 /* Assets.xcassets in Resources */,
 				AD1ABAB92831907B00B3E448 /* Main.storyboard in Resources */,
+				C8CDFBBD2A54CEB00008A4B2 /* SF-Pro-Text-Regular.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

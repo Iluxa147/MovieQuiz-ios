@@ -1,5 +1,27 @@
 import UIKit
 
+extension UIAlertController {
+    func setTitleFont(font: UIFont?) {
+        guard let title = self.title, let font = font else { return }
+        if title.isEmpty { return }
+        
+        let attributeString = NSMutableAttributedString(string: title)
+        attributeString.addAttributes([NSAttributedString.Key.font : font],
+                                      range: NSMakeRange(0, title.count))
+        self.setValue(attributeString, forKey: "attributedTitle")
+    }
+    
+    func setMessageFont(font: UIFont?) {
+        guard let message = self.message, let font = font else { return }
+        if message.isEmpty { return }
+        
+        let attributeString = NSMutableAttributedString(string: message)
+        attributeString.addAttributes([NSAttributedString.Key.font : font],
+                                      range: NSMakeRange(0, message.count))
+        self.setValue(attributeString, forKey: "attributedMessage")
+    }
+}
+
 struct QuizStepViewModel {
     let filmPosterImage: UIImage
     let question: String
@@ -40,15 +62,23 @@ final class MovieQuizViewController: UIViewController {
         QuizQuestion(filmPosterName: "Vivarium", correctAnswer: false)
     ]
     
+    private var alertTitleFont : UIFont?
+    private var alertTextFont : UIFont?
+    
     private var currentQuestionIdx: Int = 0
     private var correctAnswersCount: Int = 0
     
     @IBOutlet private weak var filmPosterImage: UIImageView!
     @IBOutlet private weak var questionCounterLabel: UILabel!
     @IBOutlet private weak var questionLabel: UILabel!
+    @IBOutlet weak var noButton: UIButton!
+    @IBOutlet weak var yesButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        alertTitleFont = UIFont(name: "SFProText-Bold1", size: 17.0)
+        alertTextFont = UIFont(name: "SFProText-Regular1", size: 13.0)
         
         filmPosterImage.layer.masksToBounds = true
         filmPosterImage.layer.cornerRadius = 20
@@ -65,10 +95,11 @@ final class MovieQuizViewController: UIViewController {
     
     private func showQuizStep(quizStep: QuizStepViewModel) {
         filmPosterImage.image = quizStep.filmPosterImage
-        questionCounterLabel.text = quizStep.questionCounterStr
-        questionLabel.text = quizStep.question
-        
         filmPosterImage.layer.borderWidth = 0
+        questionLabel.text = quizStep.question
+        questionCounterLabel.text = quizStep.questionCounterStr
+        
+        toggleAnswerButtonsUsability(isEnabled: true)
     }
     
     private func showQuizResultAlert(result: QuizResultsViewModel) {
@@ -81,6 +112,9 @@ final class MovieQuizViewController: UIViewController {
         }
         
         alert.addAction(action)
+        alert.setTitleFont(font: alertTitleFont)
+        alert.setMessageFont(font: alertTextFont)
+        
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -103,7 +137,13 @@ final class MovieQuizViewController: UIViewController {
         filmPosterImage.layer.borderWidth = 8
         filmPosterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         
+        toggleAnswerButtonsUsability(isEnabled: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: showNextQuestionOrResult)
+    }
+    
+    private func toggleAnswerButtonsUsability(isEnabled: Bool) {
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
     }
     
     @IBAction private func noButtonTap(_ sender: UIButton) {

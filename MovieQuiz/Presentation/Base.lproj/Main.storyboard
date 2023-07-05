@@ -116,8 +116,10 @@
                     </view>
                     <connections>
                         <outlet property="filmPosterImage" destination="csF-7I-Dyf" id="dLj-aa-bbA"/>
+                        <outlet property="noButton" destination="By5-oJ-0sg" id="xFH-sr-Hpb"/>
                         <outlet property="questionCounterLabel" destination="sTl-8r-CVd" id="YJh-8a-jVr"/>
                         <outlet property="questionLabel" destination="4Ru-hP-8FY" id="CeF-1V-Sc6"/>
+                        <outlet property="yesButton" destination="wZq-15-Pdj" id="dxX-LG-u1D"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
