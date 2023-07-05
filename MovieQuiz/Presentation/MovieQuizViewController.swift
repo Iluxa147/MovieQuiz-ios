@@ -1,27 +1,5 @@
 import UIKit
 
-extension UIAlertController {
-    func setTitleFont(font: UIFont?) {
-        guard let title = self.title, let font = font else { return }
-        if title.isEmpty { return }
-        
-        let attributeString = NSMutableAttributedString(string: title)
-        attributeString.addAttributes([NSAttributedString.Key.font : font],
-                                      range: NSMakeRange(0, title.count))
-        self.setValue(attributeString, forKey: "attributedTitle")
-    }
-    
-    func setMessageFont(font: UIFont?) {
-        guard let message = self.message, let font = font else { return }
-        if message.isEmpty { return }
-        
-        let attributeString = NSMutableAttributedString(string: message)
-        attributeString.addAttributes([NSAttributedString.Key.font : font],
-                                      range: NSMakeRange(0, message.count))
-        self.setValue(attributeString, forKey: "attributedMessage")
-    }
-}
-
 struct QuizStepViewModel {
     let filmPosterImage: UIImage
     let question: String
@@ -62,9 +40,6 @@ final class MovieQuizViewController: UIViewController {
         QuizQuestion(filmPosterName: "Vivarium", correctAnswer: false)
     ]
     
-    private var alertTitleFont : UIFont?
-    private var alertTextFont : UIFont?
-    
     private var currentQuestionIdx: Int = 0
     private var correctAnswersCount: Int = 0
     
@@ -76,9 +51,6 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        alertTitleFont = UIFont(name: "SFProText-Bold1", size: 17.0)
-        alertTextFont = UIFont(name: "SFProText-Regular1", size: 13.0)
         
         filmPosterImage.layer.masksToBounds = true
         filmPosterImage.layer.cornerRadius = 20
@@ -112,9 +84,6 @@ final class MovieQuizViewController: UIViewController {
         }
         
         alert.addAction(action)
-        alert.setTitleFont(font: alertTitleFont)
-        alert.setMessageFont(font: alertTextFont)
-        
         self.present(alert, animated: true, completion: nil)
     }
     
