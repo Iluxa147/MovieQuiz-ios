@@ -1,6 +1,7 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+    //MARK: - Private fields
     private let questionsAmount: Int = 10
     
     private var currentQuestionIdx: Int = 0
@@ -42,7 +43,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     // MARK: - Private functions
-    
     private func convertToQuizStep(model: QuizQuestion) -> QuizStepViewModel {
         let retVal = QuizStepViewModel(filmPosterImage: UIImage(named: model.filmPosterName) ?? UIImage(), question: model.question, questionCounterStr: "\(currentQuestionIdx + 1)/\(questionsAmount)")
         
@@ -105,7 +105,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     // MARK: - Actions
-    
     @IBAction private func noButtonTap(_ sender: UIButton) {
         guard let currentQuestion = currentQuestion else { return }
         

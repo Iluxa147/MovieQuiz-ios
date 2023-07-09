@@ -20,6 +20,7 @@ class QuestionFactory: QuestionFactoryProtocol {
         self.delegate = delegate
     }
     
+    // TODO: fix repeatable random idx get
     func requestNextQuestion() {
         guard let idx = (0..<questions.count).randomElement() else { return }
         
