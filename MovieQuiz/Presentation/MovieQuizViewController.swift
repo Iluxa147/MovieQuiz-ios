@@ -1,12 +1,12 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var currentQuestionIdx: Int = 0
     private var correctAnswersCount: Int = 0
     
     private let questionsAmount: Int = 10
-    private let questionFactory: QuestionFactoryProtocol = QuestionFactory()
-    private var currentQuestion: QuizQuestion? = nil
+    private var questionFactory: QuestionFactoryProtocol?
+    private var currentQuestion: QuizQuestion?
     
     @IBOutlet private weak var filmPosterImage: UIImageView!
     @IBOutlet private weak var questionCounterLabel: UILabel!
@@ -20,13 +20,24 @@ final class MovieQuizViewController: UIViewController {
         filmPosterImage.layer.masksToBounds = true
         filmPosterImage.layer.cornerRadius = 20
         
-        if let firstQuestion = questionFactory.requestNextQuestion() {
-            currentQuestion = firstQuestion
-            let viewModel = convert(model: firstQuestion)
-            showQuizStep(quizStep: viewModel)
-        }
+        questionFactory = QuestionFactory(delegate: self)
+        
+        questionFactory?.requestNextQuestion()
         
         //showQuizStep(quizStep: getQuizStep(questionIdx: currentQuestionIdx))
+    }
+    
+    // MARK: - QuestionFactoryDelegate
+    
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else { return }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.showQuizStep(quizStep: viewModel)
+        }
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -36,12 +47,12 @@ final class MovieQuizViewController: UIViewController {
     }
     
     /*
-    private func getQuizStep(questionIdx: Int) -> QuizStepViewModel {
-        let quizQuestion = questions[questionIdx]
-        let retVal = QuizStepViewModel(filmPosterImage: UIImage(named: quizQuestion.filmPosterName) ?? UIImage(), question: quizQuestion.question, questionCounterStr: "\(currentQuestionIdx + 1)/\(questions.count)")
-        
-        return retVal
-    }
+     private func getQuizStep(questionIdx: Int) -> QuizStepViewModel {
+     let quizQuestion = questions[questionIdx]
+     let retVal = QuizStepViewModel(filmPosterImage: UIImage(named: quizQuestion.filmPosterName) ?? UIImage(), question: quizQuestion.question, questionCounterStr: "\(currentQuestionIdx + 1)/\(questions.count)")
+     
+     return retVal
+     }
      */
     
     private func showQuizStep(quizStep: QuizStepViewModel) {
@@ -61,12 +72,16 @@ final class MovieQuizViewController: UIViewController {
             self.currentQuestionIdx = 0
             self.correctAnswersCount = 0
             
+            self.questionFactory?.requestNextQuestion()
+            
+            /*
             if let nextQuestion = self.questionFactory.requestNextQuestion() {
                 self.currentQuestion = nextQuestion
                 let viewModel = self.convert(model: nextQuestion)
                 
                 self.showQuizStep(quizStep: viewModel)
             }
+             */
             
             //self.showQuizStep(quizStep: self.getQuizStep(questionIdx: self.currentQuestionIdx))
         }
@@ -83,11 +98,15 @@ final class MovieQuizViewController: UIViewController {
         } else {
             currentQuestionIdx += 1
             
+            questionFactory?.requestNextQuestion()
+            
+            /*
             if let nextQuestion = questionFactory.requestNextQuestion() {
                 currentQuestion = nextQuestion
                 let viewModel = convert(model: nextQuestion)
                 showQuizStep(quizStep: viewModel)
             }
+             */
             
             //showQuizStep(quizStep: getQuizStep(questionIdx: currentQuestionIdx))
         }
