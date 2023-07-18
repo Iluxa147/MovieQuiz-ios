@@ -24,12 +24,15 @@ class QuestionFactory: QuestionFactoryProtocol {
     }
     
     func generateRandom() {
+        guard !questions.isEmpty else { return }
+        
         let sequence = 0..<self.questions.count
         shuffledQuestionsIdxs = sequence.shuffled()
     }
     
     func requestNextQuestion() {
         guard shuffledQuestionsIdxs != nil, !shuffledQuestionsIdxs!.isEmpty else { return }
+        
         let idx = shuffledQuestionsIdxs!.removeLast()
         
         let question = questions[safe: idx]
