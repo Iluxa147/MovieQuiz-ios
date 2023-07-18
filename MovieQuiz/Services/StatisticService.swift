@@ -1,11 +1,6 @@
 import Foundation
 
 final class StatisticServiceImplementation: StatisticServiceProtocol {
-    var totalAccuracyPerсent: Double {
-        if totalQuestionsAnswered == 0 { return 0 }
-        return 100 * Double(totalCorrectAnswers) / Double(totalQuestionsAnswered)
-    }
-    
     // MARK: - StatisticServiceProtocol
     private (set) var totalGamesPlayed: Int {
         get {
@@ -22,6 +17,13 @@ final class StatisticServiceImplementation: StatisticServiceProtocol {
         }
         set {
             userDefaults.setValue(newValue, forKey: Keys.totalCorrectAnswers.rawValue)
+        }
+    }
+    
+    var totalAccuracyPerсent: Double {
+        get {
+            if totalQuestionsAnswered == 0 { return 0 }
+            return 100 * Double(totalCorrectAnswers) / Double(totalQuestionsAnswered)
         }
     }
     

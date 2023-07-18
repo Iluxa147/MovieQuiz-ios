@@ -10,7 +10,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenter?
-    private var statisticService = StatisticServiceImplementation()
+    private var statisticService: StatisticServiceProtocol?
     
     @IBOutlet private weak var filmPosterImage: UIImageView!
     @IBOutlet private weak var questionCounterLabel: UILabel!
@@ -24,6 +24,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         filmPosterImage.layer.masksToBounds = true
         filmPosterImage.layer.cornerRadius = 20
+        
+        statisticService = StatisticServiceImplementation()
         
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
@@ -76,6 +78,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResult() {
         if currentQuestionIdx == questionsAmount - 1 {
+            guard let statisticService = statisticService else { return }
+            
             statisticService.store(correctAnswersCount: correctAnswersCount, questionsCount: questionsAmount)
             let record = statisticService.bestGame
             let resultText =
