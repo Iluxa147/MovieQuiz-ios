@@ -20,6 +20,7 @@ class QuestionFactory: QuestionFactoryProtocol {
     
     init(delegate: QuestionFactoryDelegate) {
         self.delegate = delegate
+        generateRandom()
     }
     
     func generateRandom() {

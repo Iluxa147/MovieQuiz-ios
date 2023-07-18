@@ -26,7 +26,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         filmPosterImage.layer.cornerRadius = 20
         
         questionFactory = QuestionFactory(delegate: self)
-        questionFactory?.generateRandom()
         questionFactory?.requestNextQuestion()
         
         alertPresenter = AlertPresenter(viewController: self)
@@ -61,7 +60,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showQuizResultAlert(result: QuizResultsViewModel) {
-        let alertModel = AlertModel(title: result.title, message: result.text, buttonText: result.buttonText, resetButtonText: result.resetButtonText) { [weak self] in
+        let alertModel = AlertModel(title: result.title, message: result.text, buttonText: result.buttonText) {
+            [weak self] in
             guard let self = self else { return }
             
             self.currentQuestionIdx = 0
@@ -84,7 +84,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             "Record: \(record.correctAnswersCount)/\(record.questionsCount) (\(record.datePlayed.dateTimeString))\n" +
             "Total accuracy \(String(format: "%.2f", statisticService.totalAccuracyPerсent))%"
             
-            let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again", resetButtonText: "Reset stats")
+            let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again")
             showQuizResultAlert(result: result)
         } else {
             currentQuestionIdx += 1
