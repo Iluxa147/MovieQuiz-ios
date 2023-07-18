@@ -13,7 +13,7 @@ final class StatisticServiceImplementation: StatisticServiceProtocol {
     
     var totalAccuracyPerсent: Double {
         get {
-            if totalQuestionsAnswered == 0 { return 0 }
+            guard totalQuestionsAnswered > 0 else { return 0 }
             return 100 * Double(totalCorrectAnswers) / Double(totalQuestionsAnswered)
         }
     }
