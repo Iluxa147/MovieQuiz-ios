@@ -11,15 +11,6 @@ final class StatisticServiceImplementation: StatisticServiceProtocol {
         }
     }
     
-    private (set) var totalCorrectAnswers: Int {
-        get {
-            userDefaults.integer(forKey: Keys.totalCorrectAnswers.rawValue)
-        }
-        set {
-            userDefaults.setValue(newValue, forKey: Keys.totalCorrectAnswers.rawValue)
-        }
-    }
-    
     var totalAccuracyPerсent: Double {
         get {
             if totalQuestionsAnswered == 0 { return 0 }
@@ -50,16 +41,24 @@ final class StatisticServiceImplementation: StatisticServiceProtocol {
     private let userDefaults = UserDefaults.standard
     
     private enum Keys: String {
-        case totalGamesPlayed, totalQuestionsAnswered, totalCorrectAnswers, bestGame
+        case totalGamesPlayed, bestGame, totalQuestionsAnswered, totalCorrectAnswers
     }
     
-    // MARK: - Private members
     private var totalQuestionsAnswered: Int {
         get {
             userDefaults.integer(forKey: Keys.totalQuestionsAnswered.rawValue)
         }
         set {
             userDefaults.setValue(newValue, forKey: Keys.totalQuestionsAnswered.rawValue)
+        }
+    }
+    
+    private var totalCorrectAnswers: Int {
+        get {
+            userDefaults.integer(forKey: Keys.totalCorrectAnswers.rawValue)
+        }
+        set {
+            userDefaults.setValue(newValue, forKey: Keys.totalCorrectAnswers.rawValue)
         }
     }
     
