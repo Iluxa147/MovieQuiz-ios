@@ -1,52 +1,12 @@
 import Foundation
 
-struct GameRecord: Codable, Comparable {
-    let correctAnswers: Int
-    let quizQuestions: Int
-    let datePlayed: Date
-    
-    static func < (lhs: GameRecord, rhs: GameRecord) -> Bool {
-        return lhs.correctAnswers < rhs.correctAnswers
-    }
-    
-    //static func == (lhs: GameRecord, rhs: GameRecord) -> Bool {
-    //    return lhs.correctAnswers == rhs.correctAnswers
-    //}
-}
-
-protocol StatisticService {
-    var totalGamesPlayed: Int { get }
-    var totalCorrectAnswers: Int { get }
-    //var totalAccuracy: Double { get }
-    var bestGame: GameRecord { get }
-    
-    func store(correctAnswers: Int, quizQuestions amount: Int)
-}
-
 final class StatisticServiceImplementation: StatisticService {
-    private enum Keys: String {
-        case totalAccuracyPerсent, totalQuestionsAnswered, totalGamesPlayed, totalCorrectAnswers, bestGame
-    }
-    
     var totalAccuracyPerсent: Double {
-        get {
-            userDefaults.double(forKey: Keys.totalAccuracyPerсent.rawValue)
-        }
-        set {
-            userDefaults.setValue(newValue, forKey: Keys.totalAccuracyPerсent.rawValue)
-        }
+        if totalQuestionsAnswered == 0 { return 0 }
+        return 100 * Double(totalCorrectAnswers) / Double(totalQuestionsAnswered)
     }
     
-    var totalQuestionsAnswered: Int {
-        get {
-            userDefaults.integer(forKey: Keys.totalQuestionsAnswered.rawValue)
-        }
-        set {
-            userDefaults.setValue(newValue, forKey: Keys.totalQuestionsAnswered.rawValue)
-        }
-    }
-    
-    var totalGamesPlayed: Int {
+    private (set) var totalGamesPlayed: Int {
         get {
             userDefaults.integer(forKey: Keys.totalGamesPlayed.rawValue)
         }
@@ -55,7 +15,7 @@ final class StatisticServiceImplementation: StatisticService {
         }
     }
     
-    var totalCorrectAnswers: Int {
+    private (set) var totalCorrectAnswers: Int {
         get {
             userDefaults.integer(forKey: Keys.totalCorrectAnswers.rawValue)
         }
@@ -64,18 +24,18 @@ final class StatisticServiceImplementation: StatisticService {
         }
     }
     
-    var bestGame: GameRecord {
+    private (set) var bestGame: GameRecord {
         get {
             guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
                   let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
-                return .init(correctAnswers: 0, quizQuestions: 0, datePlayed: Date())
+                return .init(correctAnswersCount: 0, questionsCount: 0, datePlayed: Date())
             }
             
             return record
         }
         set {
             guard let data = try? JSONEncoder().encode(newValue) else {
-                print("Error") // TODO useless?
+                print("Unable to save result")
                 return
             }
             
@@ -85,13 +45,25 @@ final class StatisticServiceImplementation: StatisticService {
     
     private let userDefaults = UserDefaults.standard
     
-    func store(correctAnswers: Int, quizQuestions: Int) {
+    private enum Keys: String {
+        case totalGamesPlayed, totalQuestionsAnswered, totalCorrectAnswers, bestGame
+    }
+    
+    private var totalQuestionsAnswered: Int {
+        get {
+            userDefaults.integer(forKey: Keys.totalQuestionsAnswered.rawValue)
+        }
+        set {
+            userDefaults.setValue(newValue, forKey: Keys.totalQuestionsAnswered.rawValue)
+        }
+    }
+    
+    func store(correctAnswersCount: Int, questionsCount: Int) {
         totalGamesPlayed += 1
-        totalQuestionsAnswered += quizQuestions
-        totalCorrectAnswers += correctAnswers
-        totalAccuracyPerсent = 100 * Double(totalCorrectAnswers) / Double(totalQuestionsAnswered)
+        totalQuestionsAnswered += questionsCount
+        totalCorrectAnswers += correctAnswersCount
         
-        let potentialRecord = GameRecord(correctAnswers: correctAnswers, quizQuestions: quizQuestions, datePlayed: Date())
+        let potentialRecord = GameRecord(correctAnswersCount: correctAnswersCount, questionsCount: questionsCount, datePlayed: Date())
         if bestGame < potentialRecord {
             bestGame = potentialRecord
         }

@@ -16,13 +16,20 @@ class QuestionFactory: QuestionFactoryProtocol {
         QuizQuestion(filmPosterName: "Vivarium", correctAnswer: false)
     ]
     
+    private var shuffledQuestionsIdxs: [Int]?
+    
     init(delegate: QuestionFactoryDelegate) {
         self.delegate = delegate
     }
     
-    // TODO: fix repeatable random idx get
+    func generateRandom() {
+        let sequence = 0..<self.questions.count
+        shuffledQuestionsIdxs = sequence.shuffled()
+    }
+    
     func requestNextQuestion() {
-        guard let idx = (0..<questions.count).randomElement() else { return }
+        guard shuffledQuestionsIdxs != nil, !shuffledQuestionsIdxs!.isEmpty else { return }
+        let idx = shuffledQuestionsIdxs!.removeLast()
         
         let question = questions[safe: idx]
         delegate?.didReceiveNextQuestion(question: question)

@@ -15,7 +15,13 @@ class AlertPresenter {
             alertModel.completion()
         }
         
+        let actionReset = UIAlertAction(title: alertModel.resetButtonText, style: .default) { _ in
+            UserDefaults.reset()
+            alertModel.completion()
+        }
+        
         alert.addAction(action)
+        alert.addAction(actionReset)
         viewController.present(alert, animated: true, completion: nil)
     }
 }
