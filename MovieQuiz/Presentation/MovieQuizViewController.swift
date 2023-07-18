@@ -67,7 +67,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.currentQuestionIdx = 0
             self.correctAnswersCount = 0
             
-            questionFactory?.generateRandom()
+            self.questionFactory?.generateRandom()
             self.questionFactory?.requestNextQuestion()
         }
         
