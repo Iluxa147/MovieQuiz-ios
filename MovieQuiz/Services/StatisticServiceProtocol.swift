@@ -1,6 +1,6 @@
 import Foundation
 
-protocol StatisticService {
+protocol StatisticServiceProtocol {
     var totalGamesPlayed: Int { get }
     var totalCorrectAnswers: Int { get }
     var bestGame: GameRecord { get }

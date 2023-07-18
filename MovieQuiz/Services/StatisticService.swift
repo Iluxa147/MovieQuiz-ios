@@ -1,11 +1,12 @@
 import Foundation
 
-final class StatisticServiceImplementation: StatisticService {
+final class StatisticServiceImplementation: StatisticServiceProtocol {
     var totalAccuracyPerсent: Double {
         if totalQuestionsAnswered == 0 { return 0 }
         return 100 * Double(totalCorrectAnswers) / Double(totalQuestionsAnswered)
     }
     
+    // MARK: - StatisticServiceProtocol
     private (set) var totalGamesPlayed: Int {
         get {
             userDefaults.integer(forKey: Keys.totalGamesPlayed.rawValue)
@@ -43,12 +44,14 @@ final class StatisticServiceImplementation: StatisticService {
         }
     }
     
+    // MARK: - Private fields
     private let userDefaults = UserDefaults.standard
     
     private enum Keys: String {
         case totalGamesPlayed, totalQuestionsAnswered, totalCorrectAnswers, bestGame
     }
     
+    // MARK: - Private members
     private var totalQuestionsAnswered: Int {
         get {
             userDefaults.integer(forKey: Keys.totalQuestionsAnswered.rawValue)
@@ -58,6 +61,7 @@ final class StatisticServiceImplementation: StatisticService {
         }
     }
     
+    // MARK: - StatisticServiceProtocol
     func store(correctAnswersCount: Int, questionsCount: Int) {
         totalGamesPlayed += 1
         totalQuestionsAnswered += questionsCount
