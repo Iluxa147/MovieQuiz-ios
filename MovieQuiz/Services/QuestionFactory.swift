@@ -26,7 +26,7 @@ class QuestionFactory: QuestionFactoryProtocol {
     func generateRandom() {
         guard !questions.isEmpty else { return }
         
-        let sequence = 0..<self.questions.count
+        let sequence = 0..<questions.count
         shuffledQuestionsIdxs = sequence.shuffled()
     }
     
@@ -34,7 +34,6 @@ class QuestionFactory: QuestionFactoryProtocol {
         guard shuffledQuestionsIdxs != nil, !shuffledQuestionsIdxs!.isEmpty else { return }
         
         let idx = shuffledQuestionsIdxs!.removeLast()
-        
         let question = questions[safe: idx]
         delegate?.didReceiveNextQuestion(question: question)
     }
