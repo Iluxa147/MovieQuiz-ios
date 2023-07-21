@@ -82,11 +82,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             
             statisticService.store(correctAnswersCount: correctAnswersCount, questionsCount: questionsAmount)
             let record = statisticService.bestGame
-            let resultText =
-            "Your result: \(correctAnswersCount)/\(questionsAmount)\n" +
-            "Total quiz played: \(statisticService.totalGamesPlayed)\n" +
-            "Record: \(record.correctAnswersCount)/\(record.questionsCount) (\(record.datePlayed.dateTimeString))\n" +
-            "Total accuracy \(String(format: "%.2f", statisticService.totalAccuracyPerсent))%"
+            let resultText = """
+               Your result: \(correctAnswersCount)/\(questionsAmount)
+               Total quiz played: \(statisticService.totalGamesPlayed)
+               Record: \(record.correctAnswersCount)/\(record.questionsCount) (\(record.datePlayed.dateTimeString))
+               Total accuracy \(String(format: "%.2f", statisticService.totalAccuracyPerсent))%
+            """
             
             let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again")
             showQuizResultAlert(result: result)
