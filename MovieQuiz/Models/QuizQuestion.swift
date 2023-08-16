@@ -1,15 +1,13 @@
 import Foundation
 
 struct QuizQuestion {
-    private static let questionDefault: String = "Is this film rating greater than 6?"
-    
-    let filmPosterName: String
+    let imageData: Data
     let question: String
     let correctAnswer: Bool
     
-    init(filmPosterName: String, correctAnswer: Bool, question: String = "") {
-        self.filmPosterName = filmPosterName
-        self.question = question.isEmpty ? QuizQuestion.questionDefault : question
+    init(imageData: Data, correctAnswer: Bool, question: String) {
+        self.imageData = imageData
+        self.question = question
         self.correctAnswer = correctAnswer
     }
 }
