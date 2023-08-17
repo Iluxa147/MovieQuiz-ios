@@ -70,14 +70,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func showNetworkError(errorMsg: String) {
         hideLoadingIndicator()
         
-        let alertModel = AlertModel(title: "Error", message: errorMsg, buttonText: "Try again") {
-            [weak self] in
-            guard let self = self else { return }
-            
-            self.currentQuestionIdx = 0
-            self.correctAnswersCount = 0
-            self.questionFactory?.loadData()
-        }
+        let alertModel = AlertModel(
+            title: "Error",
+            message: errorMsg,
+            buttonText: "Try again") {
+                [weak self] in
+                guard let self = self else { return }
+                
+                self.currentQuestionIdx = 0
+                self.correctAnswersCount = 0
+                self.questionFactory?.loadData()
+            }
         
         alertPresenter?.show(alertModel: alertModel)
     }
