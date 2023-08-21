@@ -2,9 +2,10 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     //MARK: - Private fields
-    private let questionsAmount: Int = 10
+    private let presenter =  MovieQuizPresenter()
+    //private let questionsAmount: Int = 10
     
-    private var currentQuestionIdx: Int = 0
+    //private var currentQuestionIdx: Int = 0
     private var correctAnswersCount: Int = 0
     
     private var questionFactory: QuestionFactoryProtocol?
@@ -40,7 +41,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         guard let question = question else { return }
         
         currentQuestion = question
-        let viewModel = convertToQuizStep(model: question)
+        let viewModel = presenter.convertToQuizStep(model: question)
         
         DispatchQueue.main.async { [weak self] in
             self?.showQuizStep(quizStep: viewModel)
@@ -78,7 +79,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 [weak self] in
                 guard let self = self else { return }
                 
-                self.currentQuestionIdx = 0
+                self.presenter.resetQuestionIdx()
+                //self.currentQuestionIdx = 0
                 self.correctAnswersCount = 0
                 self.questionFactory?.loadData()
             }
@@ -86,6 +88,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         alertPresenter?.show(alertModel: alertModel)
     }
     
+    /*
     private func convertToQuizStep(model: QuizQuestion) -> QuizStepViewModel {
         let retVal = QuizStepViewModel(
             filmPosterImage: UIImage(data: model.imageData) ?? UIImage(),
@@ -94,6 +97,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         return retVal
     }
+     */
     
     private func showQuizStep(quizStep: QuizStepViewModel) {
         filmPosterImage.image = quizStep.filmPosterImage
@@ -113,7 +117,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 [weak self] in
                 guard let self = self else { return }
                 
-                self.currentQuestionIdx = 0
+                self.presenter.resetQuestionIdx()
+                //self.currentQuestionIdx = 0
                 self.correctAnswersCount = 0
                 self.questionFactory?.requestNextQuestion()
             }
@@ -122,13 +127,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showNextQuestionOrResult() {
-        if currentQuestionIdx == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             guard let statisticService = statisticService else { return }
             
-            statisticService.store(correctAnswersCount: correctAnswersCount, questionsCount: questionsAmount)
+            statisticService.store(correctAnswersCount: correctAnswersCount, questionsCount: presenter.questionsAmount)
             let record = statisticService.bestGame
             let resultText = """
-               Your result: \(correctAnswersCount)/\(questionsAmount)
+               Your result: \(correctAnswersCount)/\(presenter.questionsAmount)
                Total quiz played: \(statisticService.totalGamesPlayed)
                Record: \(record.correctAnswersCount)/\(record.questionsCount) (\(record.datePlayed.dateTimeString))
                Total accuracy \(String(format: "%.2f", statisticService.totalAccuracyPerсent))%
@@ -137,7 +142,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again")
             showQuizResultAlert(result: result)
         } else {
-            currentQuestionIdx += 1
+            presenter.switchToNextQuestion()
+            //currentQuestionIdx += 1
             questionFactory?.requestNextQuestion()
         }
     }
