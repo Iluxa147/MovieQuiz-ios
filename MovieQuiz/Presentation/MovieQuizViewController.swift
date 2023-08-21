@@ -73,7 +73,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let alertModel = AlertModel(
             title: "Error",
             message: errorMsg,
-            buttonText: "Try again") {
+            buttonText: "Try again",
+            accessibilityIdentifier: "NetworkError") {
                 [weak self] in
                 guard let self = self else { return }
                 
@@ -104,14 +105,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showQuizResultAlert(result: QuizResultsViewModel) {
-        let alertModel = AlertModel(title: result.title, message: result.text, buttonText: result.buttonText) {
-            [weak self] in
-            guard let self = self else { return }
-            
-            self.currentQuestionIdx = 0
-            self.correctAnswersCount = 0
-            self.questionFactory?.requestNextQuestion()
-        }
+        let alertModel = AlertModel(
+            title: result.title,
+            message: result.text,
+            buttonText: result.buttonText,
+            accessibilityIdentifier: "GameResults") {
+                [weak self] in
+                guard let self = self else { return }
+                
+                self.currentQuestionIdx = 0
+                self.correctAnswersCount = 0
+                self.questionFactory?.requestNextQuestion()
+            }
         
         alertPresenter?.show(alertModel: alertModel)
     }
