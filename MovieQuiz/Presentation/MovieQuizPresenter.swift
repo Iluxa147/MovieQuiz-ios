@@ -1,24 +1,30 @@
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     let questionsAmount: Int = 10
     
     private var currentQuestionIdx: Int = 0
     weak var viewController: MovieQuizViewController?
     var currentQuestion: QuizQuestion?
     
-    func isLastQuestion() -> Bool {
-        return currentQuestionIdx == questionsAmount - 1
+    var correctAnswersCount: Int = 0
+    
+    var questionFactory: QuestionFactoryProtocol?
+    //private var currentQuestion: QuizQuestion?
+    //private var alertPresenter: AlertPresenter?
+    var statisticService: StatisticServiceProtocol?
+    
+    init(viewController: MovieQuizViewController) {
+        self.viewController = viewController
+        
+        statisticService = StatisticServiceImplementation()
+        
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        self.viewController?.showLoadingIndicator()
+        questionFactory?.loadData()
     }
     
-    func resetQuestionIdx() {
-        currentQuestionIdx = 0
-    }
-    
-    func switchToNextQuestion() {
-        currentQuestionIdx += 1
-    }
-    
+    // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else { return }
         
@@ -30,12 +36,41 @@ final class MovieQuizPresenter {
         }
     }
     
+    func didLoadDataFromServer() {
+        viewController?.hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        viewController?.showNetworkError(errorMsg: error.localizedDescription)
+    }
+    
+    // MARK: - TODO mark
+    func isLastQuestion() -> Bool {
+        return currentQuestionIdx == questionsAmount - 1
+    }
+    
+    func resetGameData() {
+        currentQuestionIdx = 0
+        correctAnswersCount = 0
+    }
+    
+    func switchToNextQuestion() {
+        currentQuestionIdx += 1
+    }
+    
     private func didAnswer(isYes: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
         }
         
-        viewController?.showAnswerResult(isCorrect: isYes == currentQuestion.correctAnswer)
+        proceedWithAnswer(isCorrectAnswer: isYes == currentQuestion.correctAnswer)
+    }
+    
+    func didAnswer(isCorrectAnswer: Bool) {
+        if(isCorrectAnswer) {
+            correctAnswersCount += 1
+        }
     }
     
     func convertToQuizStep(model: QuizQuestion) -> QuizStepViewModel {
@@ -45,6 +80,38 @@ final class MovieQuizPresenter {
             questionCounterStr: "\(currentQuestionIdx + 1)/\(questionsAmount)")
         
         return retVal
+    }
+    
+    func proceedWithAnswer(isCorrectAnswer: Bool) {
+        didAnswer(isCorrectAnswer: isCorrectAnswer)
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrectAnswer)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            proceedToNextQuestionOrResults()
+        }
+    }
+    
+    func proceedToNextQuestionOrResults() {
+        if isLastQuestion() {
+            guard let statisticService = statisticService else { return }
+            
+            statisticService.store(correctAnswersCount: correctAnswersCount, questionsCount: questionsAmount)
+            let record = statisticService.bestGame
+            let resultText = """
+               Your result: \(correctAnswersCount)/\(questionsAmount)
+               Total quiz played: \(statisticService.totalGamesPlayed)
+               Record: \(record.correctAnswersCount)/\(record.questionsCount) (\(record.datePlayed.dateTimeString))
+               Total accuracy \(String(format: "%.2f", statisticService.totalAccuracyPerсent))%
+            """
+            
+            let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again")
+            viewController?.showQuizResultAlert(result: result)
+        } else {
+            switchToNextQuestion()
+            //currentQuestionIdx += 1
+            questionFactory?.requestNextQuestion()
+        }
     }
     
     func noButtonTap() {

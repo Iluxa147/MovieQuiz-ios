@@ -1,17 +1,9 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizViewController: UIViewController {
     //MARK: - Private fields
-    private let presenter =  MovieQuizPresenter()
-    //private let questionsAmount: Int = 10
-    
-    //private var currentQuestionIdx: Int = 0
-    private var correctAnswersCount: Int = 0
-    
-    private var questionFactory: QuestionFactoryProtocol?
-    //private var currentQuestion: QuizQuestion?
+    private var presenter:  MovieQuizPresenter!
     private var alertPresenter: AlertPresenter?
-    private var statisticService: StatisticServiceProtocol?
     
     @IBOutlet private weak var filmPosterImage: UIImageView!
     @IBOutlet private weak var questionCounterLabel: UILabel!
@@ -27,43 +19,23 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         filmPosterImage.layer.masksToBounds = true
         filmPosterImage.layer.cornerRadius = 20
         
-        presenter.viewController = self
-        
-        statisticService = StatisticServiceImplementation()
-        
-        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        showLoadingIndicator()
-        questionFactory?.loadData()
-        
+        presenter = MovieQuizPresenter(viewController: self)
         alertPresenter = AlertPresenter(viewController: self)
-    }
-    
-    // MARK: - QuestionFactoryDelegate
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        presenter.didReceiveNextQuestion(question: question)
-    }
-    
-    func didLoadDataFromServer() {
-        hideLoadingIndicator()
-        questionFactory?.requestNextQuestion()
-    }
-    
-    func didFailToLoadData(with error: Error) {
-        showNetworkError(errorMsg: error.localizedDescription)
+        
     }
     
     // MARK: - Private members
-    private func showLoadingIndicator() {
+    func showLoadingIndicator() {
         filmImageLoadingIndicator.isHidden = false
         filmImageLoadingIndicator.startAnimating()
     }
     
-    private func hideLoadingIndicator() {
+    func hideLoadingIndicator() {
         filmImageLoadingIndicator.isHidden = true
         filmImageLoadingIndicator.stopAnimating()
     }
     
-    private func showNetworkError(errorMsg: String) {
+    func showNetworkError(errorMsg: String) {
         hideLoadingIndicator()
         
         let alertModel = AlertModel(
@@ -74,10 +46,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 [weak self] in
                 guard let self = self else { return }
                 
-                self.presenter.resetQuestionIdx()
+                self.presenter.resetGameData()
                 //self.currentQuestionIdx = 0
-                self.correctAnswersCount = 0
-                self.questionFactory?.loadData()
+                //self.correctAnswersCount = 0
+                presenter.questionFactory?.loadData()
             }
         
         alertPresenter?.show(alertModel: alertModel)
@@ -103,7 +75,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         toggleAnswerButtonsUsability(isEnabled: true)
     }
     
-    private func showQuizResultAlert(result: QuizResultsViewModel) {
+    func showQuizResultAlert(result: QuizResultsViewModel) {
         let alertModel = AlertModel(
             title: result.title,
             message: result.text,
@@ -112,15 +84,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 [weak self] in
                 guard let self = self else { return }
                 
-                self.presenter.resetQuestionIdx()
+                self.presenter.resetGameData()
                 //self.currentQuestionIdx = 0
-                self.correctAnswersCount = 0
-                self.questionFactory?.requestNextQuestion()
+                //self.correctAnswersCount = 0
+                presenter.questionFactory?.requestNextQuestion()
             }
         
         alertPresenter?.show(alertModel: alertModel)
     }
     
+    
+    /*
     private func showNextQuestionOrResult() {
         if presenter.isLastQuestion() {
             guard let statisticService = statisticService else { return }
@@ -142,22 +116,39 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             questionFactory?.requestNextQuestion()
         }
     }
+     */
     
-    func showAnswerResult(isCorrect: Bool) {
+    func highlightImageBorder(isCorrectAnswer: Bool) {
+        filmPosterImage.layer.borderWidth = 8
+        filmPosterImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        
+        toggleAnswerButtonsUsability(isEnabled: false)
+    }
+    
+    /*
+    func showAnswerResult(isCorrectAnswer: Bool) {
+        presenter.didAnswer(isCorrectAnswer: isCorrectAnswer)
+        
+        /*
         if isCorrect {
             correctAnswersCount += 1
         }
+        */
         
-        filmPosterImage.layer.borderWidth = 8
-        filmPosterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        toggleAnswerButtonsUsability(isEnabled: false)
+        //filmPosterImage.layer.borderWidth = 8
+        //filmPosterImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        //
+        //toggleAnswerButtonsUsability(isEnabled: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
             
-            self.showNextQuestionOrResult()
+            //self.presenter.correctAnswersCount = self.correctAnswersCount
+            //self.presenter.questionFactory = self.questionFactory
+            //self.presenter.statisticService = self.statisticService
+            self.presenter.showNextQuestionOrResult()
         }
     }
+     */
     
     private func toggleAnswerButtonsUsability(isEnabled: Bool) {
         noButton.isEnabled = isEnabled
