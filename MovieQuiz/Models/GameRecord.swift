@@ -8,6 +8,9 @@ struct GameRecord: Codable, Comparable {
     static func < (lhs: GameRecord, rhs: GameRecord) -> Bool {
         let lhsMetric = Float(lhs.correctAnswersCount) / Float(lhs.questionsCount)
         let rhsMetric = Float(rhs.correctAnswersCount) / Float(rhs.questionsCount)
+        
+        // empirical precision to avoid near equal game records
+        // we can make a bit rude comparison here, since a high accuracy is not a point
         return lhsMetric - rhsMetric < 0.001
     }
 }

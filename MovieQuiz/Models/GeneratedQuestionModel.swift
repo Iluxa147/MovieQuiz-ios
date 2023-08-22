@@ -14,6 +14,9 @@ class GeneratedQuestionModel {
         "Is this film rating \(comparison.rawValue) \(rating)?"
     }()
     
+    // since the film rating is rounded to tenths and we are taking value with some reserve
+    private let precisionToRatingCheck: Float = 0.001
+    
     init(rating: Float, comparison: GeneratedQuestionComparison) {
         self.rating = rating
         self.comparison = comparison
@@ -22,11 +25,11 @@ class GeneratedQuestionModel {
     func getCorrectAnswer(ratingToCheck: Float) -> Bool {
         switch comparison {
         case GeneratedQuestionComparison.lesser:
-            return ratingToCheck < rating
+            return ratingToCheck.isLess(than: rating, precision: precisionToRatingCheck)
         case GeneratedQuestionComparison.equals:
-            return abs(ratingToCheck - rating) < Float.ulpOfOne
+            return ratingToCheck.isEqual(other: rating, precision: precisionToRatingCheck)
         default:
-            return ratingToCheck > rating
+            return ratingToCheck.isGreater(than: rating, precision: precisionToRatingCheck)
         }
     }
 }
