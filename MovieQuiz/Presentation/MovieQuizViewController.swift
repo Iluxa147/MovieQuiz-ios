@@ -44,7 +44,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
                 guard let self = self else { return }
                 
                 self.presenter.resetGameData()
-                presenter.requestNextQuestion()
+                self.presenter.requestNextQuestion()
             }
         
         alertPresenter?.show(alertModel: alertModel)
@@ -62,7 +62,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
                 guard let self = self else { return }
                 
                 self.presenter.resetGameData()
-                presenter.questionFactory?.loadData()
+                self.presenter.questionFactory?.loadData()
             }
         
         alertPresenter?.show(alertModel: alertModel)
