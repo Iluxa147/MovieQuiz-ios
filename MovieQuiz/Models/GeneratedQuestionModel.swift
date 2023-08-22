@@ -24,11 +24,11 @@ class GeneratedQuestionModel {
     func getCorrectAnswer(ratingToCheck: Float) -> Bool {
         switch comparison {
         case GeneratedQuestionComparison.lesser:
-            return abs(ratingToCheck - rating) > precision
+            return ratingToCheck < rating
         case GeneratedQuestionComparison.equals:
             return abs(ratingToCheck - rating) <= Float.ulpOfOne
         default:
-            return abs(ratingToCheck - rating) < precision
+            return ratingToCheck > rating
         }
     }
 }
