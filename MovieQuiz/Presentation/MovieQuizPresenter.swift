@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     var questionFactory: QuestionFactoryProtocol?
@@ -57,7 +57,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     func convertToQuizStep(model: QuizQuestion) -> QuizStepViewModel {
         let retVal = QuizStepViewModel(
-            filmPosterImage: UIImage(data: model.imageData) ?? UIImage(),
+            filmPosterImageData: model.imageData,
             question: model.question,
             questionCounterStr: "\(currentQuestionIdx + 1)/\(questionsAmount)")
         
