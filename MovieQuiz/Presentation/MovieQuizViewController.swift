@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     //MARK: - Private fields
     private var presenter:  MovieQuizPresenter!
     private var alertPresenter: AlertPresenter?
@@ -24,48 +24,7 @@ final class MovieQuizViewController: UIViewController {
         
     }
     
-    // MARK: - Private members
-    func showLoadingIndicator() {
-        filmImageLoadingIndicator.isHidden = false
-        filmImageLoadingIndicator.startAnimating()
-    }
-    
-    func hideLoadingIndicator() {
-        filmImageLoadingIndicator.isHidden = true
-        filmImageLoadingIndicator.stopAnimating()
-    }
-    
-    func showNetworkError(errorMsg: String) {
-        hideLoadingIndicator()
-        
-        let alertModel = AlertModel(
-            title: "Error",
-            message: errorMsg,
-            buttonText: "Try again",
-            accessibilityIdentifier: "NetworkError") {
-                [weak self] in
-                guard let self = self else { return }
-                
-                self.presenter.resetGameData()
-                //self.currentQuestionIdx = 0
-                //self.correctAnswersCount = 0
-                presenter.questionFactory?.loadData()
-            }
-        
-        alertPresenter?.show(alertModel: alertModel)
-    }
-    
-    /*
-    private func convertToQuizStep(model: QuizQuestion) -> QuizStepViewModel {
-        let retVal = QuizStepViewModel(
-            filmPosterImage: UIImage(data: model.imageData) ?? UIImage(),
-            question: model.question,
-            questionCounterStr: "\(currentQuestionIdx + 1)/\(questionsAmount)")
-        
-        return retVal
-    }
-     */
-    
+    // MARK: - MovieQuizViewControllerProtocol
     func showQuizStep(quizStep: QuizStepViewModel) {
         filmPosterImage.image = quizStep.filmPosterImage
         filmPosterImage.layer.borderWidth = 0
@@ -85,38 +44,38 @@ final class MovieQuizViewController: UIViewController {
                 guard let self = self else { return }
                 
                 self.presenter.resetGameData()
-                //self.currentQuestionIdx = 0
-                //self.correctAnswersCount = 0
                 presenter.questionFactory?.requestNextQuestion()
             }
         
         alertPresenter?.show(alertModel: alertModel)
     }
     
-    
-    /*
-    private func showNextQuestionOrResult() {
-        if presenter.isLastQuestion() {
-            guard let statisticService = statisticService else { return }
-            
-            statisticService.store(correctAnswersCount: correctAnswersCount, questionsCount: presenter.questionsAmount)
-            let record = statisticService.bestGame
-            let resultText = """
-               Your result: \(correctAnswersCount)/\(presenter.questionsAmount)
-               Total quiz played: \(statisticService.totalGamesPlayed)
-               Record: \(record.correctAnswersCount)/\(record.questionsCount) (\(record.datePlayed.dateTimeString))
-               Total accuracy \(String(format: "%.2f", statisticService.totalAccuracyPerсent))%
-            """
-            
-            let result = QuizResultsViewModel(title: "This round is over!", text: resultText, buttonText: "Play again")
-            showQuizResultAlert(result: result)
-        } else {
-            presenter.switchToNextQuestion()
-            //currentQuestionIdx += 1
-            questionFactory?.requestNextQuestion()
-        }
+    func showNetworkError(errorMsg: String) {
+        hideLoadingIndicator()
+        
+        let alertModel = AlertModel(
+            title: "Error",
+            message: errorMsg,
+            buttonText: "Try again",
+            accessibilityIdentifier: "NetworkError") {
+                [weak self] in
+                guard let self = self else { return }
+                
+                self.presenter.resetGameData()
+                presenter.questionFactory?.loadData()
+            }
+        
+        alertPresenter?.show(alertModel: alertModel)
     }
-     */
+    
+    func showLoadingIndicator() {
+        filmImageLoadingIndicator.isHidden = false
+        filmImageLoadingIndicator.startAnimating()
+    }
+    
+    func hideLoadingIndicator() {
+        filmImageLoadingIndicator.isHidden = true
+    }
     
     func highlightImageBorder(isCorrectAnswer: Bool) {
         filmPosterImage.layer.borderWidth = 8
@@ -125,31 +84,7 @@ final class MovieQuizViewController: UIViewController {
         toggleAnswerButtonsUsability(isEnabled: false)
     }
     
-    /*
-    func showAnswerResult(isCorrectAnswer: Bool) {
-        presenter.didAnswer(isCorrectAnswer: isCorrectAnswer)
-        
-        /*
-        if isCorrect {
-            correctAnswersCount += 1
-        }
-        */
-        
-        //filmPosterImage.layer.borderWidth = 8
-        //filmPosterImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        //
-        //toggleAnswerButtonsUsability(isEnabled: false)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            
-            //self.presenter.correctAnswersCount = self.correctAnswersCount
-            //self.presenter.questionFactory = self.questionFactory
-            //self.presenter.statisticService = self.statisticService
-            self.presenter.showNextQuestionOrResult()
-        }
-    }
-     */
-    
+    // MARK: - Private members
     private func toggleAnswerButtonsUsability(isEnabled: Bool) {
         noButton.isEnabled = isEnabled
         yesButton.isEnabled = isEnabled
@@ -157,12 +92,10 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Actions
     @IBAction private func noButtonTap(_ sender: UIButton) {
-        //presenter.currentQuestion = currentQuestion
         presenter.noButtonTap()
     }
     
     @IBAction private func yesButtonTap(_ sender: UIButton) {
-        //presenter.currentQuestion = currentQuestion
         presenter.yesButtonTap()
     }
 }

@@ -1,5 +1,4 @@
 import XCTest
-
 @testable import MovieQuiz
 
 class MovieLoaderTests: XCTestCase {
