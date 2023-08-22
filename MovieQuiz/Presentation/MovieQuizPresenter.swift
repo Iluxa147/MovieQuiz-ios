@@ -25,6 +25,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        viewController?.hideLoadingIndicator()
         guard let question = question else { return }
         
         currentQuestion = question
@@ -36,8 +37,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        viewController?.hideLoadingIndicator()
-        questionFactory?.requestNextQuestion()
+        requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
@@ -48,6 +48,11 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     func resetGameData() {
         currentQuestionIdx = 0
         correctAnswersCount = 0
+    }
+    
+    func requestNextQuestion() {
+        viewController?.showLoadingIndicator()
+        questionFactory?.requestNextQuestion()
     }
     
     func convertToQuizStep(model: QuizQuestion) -> QuizStepViewModel {
@@ -93,6 +98,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private func proceedWithAnswer(isCorrectAnswer: Bool) {
         didAnswer(isCorrectAnswer: isCorrectAnswer)
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrectAnswer)
+        viewController?.showLoadingIndicator()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
@@ -101,6 +107,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     private func proceedToNextQuestionOrResults() {
+        viewController?.hideLoadingIndicator()
         if isLastQuestion() {
             guard let statisticService = statisticService else { return }
             
@@ -117,7 +124,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             viewController?.showQuizResultAlert(result: result)
         } else {
             switchToNextQuestion()
-            questionFactory?.requestNextQuestion()
+            requestNextQuestion()
         }
     }
 }

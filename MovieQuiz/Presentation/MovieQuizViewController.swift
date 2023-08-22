@@ -44,7 +44,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
                 guard let self = self else { return }
                 
                 self.presenter.resetGameData()
-                presenter.questionFactory?.requestNextQuestion()
+                presenter.requestNextQuestion()
             }
         
         alertPresenter?.show(alertModel: alertModel)
