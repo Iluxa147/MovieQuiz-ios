@@ -14,8 +14,6 @@ class GeneratedQuestionModel {
         "Is this film rating \(comparison.rawValue) \(rating)?"
     }()
     
-    private let precision: Float = 0.01
-    
     init(rating: Float, comparison: GeneratedQuestionComparison) {
         self.rating = rating
         self.comparison = comparison
@@ -26,7 +24,7 @@ class GeneratedQuestionModel {
         case GeneratedQuestionComparison.lesser:
             return ratingToCheck < rating
         case GeneratedQuestionComparison.equals:
-            return abs(ratingToCheck - rating) <= Float.ulpOfOne
+            return abs(ratingToCheck - rating) < Float.ulpOfOne
         default:
             return ratingToCheck > rating
         }
