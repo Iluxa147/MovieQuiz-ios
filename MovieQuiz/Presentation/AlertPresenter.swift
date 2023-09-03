@@ -1,6 +1,6 @@
 import UIKit
 
-class AlertPresenter {
+final class AlertPresenter {
     private weak var viewController: UIViewController?
     
     init(viewController: UIViewController) {
@@ -11,6 +11,7 @@ class AlertPresenter {
         guard let viewController = viewController else { return }
         
         let alert = UIAlertController(title: alertModel.title, message: alertModel.message, preferredStyle: .alert)
+        alert.view.accessibilityIdentifier = alertModel.accessibilityIdentifier
         let action = UIAlertAction(title: alertModel.buttonText, style: .default) { _ in
             alertModel.completion()
         }

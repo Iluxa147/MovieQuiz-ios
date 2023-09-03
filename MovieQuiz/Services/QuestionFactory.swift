@@ -1,18 +1,16 @@
 import Foundation
 
-class QuestionFactory: QuestionFactoryProtocol {
+final class QuestionFactory: QuestionFactoryProtocol {
     private weak var delegate: QuestionFactoryDelegate?
     private let moviesLoader: MoviesLoading
     private var movies: [MostPopularMovie] = []
-    
-    private let filmRatingToCheck: Int = 9
-    private lazy var questionDefault: String = {
-        return "Is this film rating greater than \(filmRatingToCheck)?"
-    }()
+    private var questionGenerator: QuestionGenerator
     
     init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
+        
+        questionGenerator = QuestionGenerator(rangeMin: 8.0, rangeMax: 9.2, rangeStep: 0.1)
     }
     
     func loadData() {
@@ -44,12 +42,13 @@ class QuestionFactory: QuestionFactoryProtocol {
                 print("Failed to load image")
             }
             
+            let generatedQuestion = questionGenerator.generateQuestion()
             let rating = Float(movie.rating) ?? 0
-            let correctAnswer = rating > Float(filmRatingToCheck)
+            let correctAnswer = generatedQuestion.getCorrectAnswer(ratingToCheck: rating)
             let question = QuizQuestion(
                 imageData: imageData,
                 correctAnswer: correctAnswer,
-                question: questionDefault
+                question: generatedQuestion.questionString
             )
             
             DispatchQueue.main.async { [weak self] in
